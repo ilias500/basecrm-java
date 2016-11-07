@@ -55,8 +55,29 @@ public class LineItemsService extends BaseService {
         checkArgument(orderId > 0, "orderId must be a valid id");
         checkArgument(id > 0, "id must be a valid id");
 
-        String url = String.format(Locale.US, "/v2/orders/%d/line_items/%s", orderId, id);
+        String url = String.format(Locale.US, "/v2/orders/%d/line_items/%d", orderId, id);
         return JsonDeserializer.deserialize(this.httpClient.get(url, null).getBody(), LineItem.class);
+    }
+
+    public LineItem update(long orderId, LineItem lineItem) {
+        checkArgument(orderId > 0, "orderId must be a valid id");
+        checkNotNull(lineItem, "lineItem parameter must not be null");
+        checkNotNull(lineItem.getId(), "lineItem must have id attribute set");
+        checkArgument(lineItem.getId() > 0, "lineItem id must be a valid id");
+
+        String url = String.format(Locale.US, "/v2/orders/%d/line_items/%d", orderId, lineItem.getId());
+        String serialized = JsonSerializer.serialize(lineItem, Views.ReadWrite.class);
+        return JsonDeserializer.deserialize(this.httpClient.put(url, serialized).getBody(), LineItem.class);
+    }
+
+    public LineItem update(long orderId, long id, Map<String, Object> attributes) {
+        checkArgument(orderId > 0, "orderId must be a valid id");
+        checkArgument(id > 0, "id must be a valid id");
+        checkNotNull(attributes, "attributes parameter must not be null");
+
+        String url = String.format(Locale.US, "/v2/orders/%d/line_items/%d", orderId, id);
+        String serialized = JsonSerializer.serialize(attributes);
+        return JsonDeserializer.deserialize(this.httpClient.put(url, serialized).getBody(), LineItem.class);
     }
 
     public boolean delete(long orderId, long id) {

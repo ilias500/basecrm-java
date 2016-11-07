@@ -63,6 +63,15 @@ class LineItemsServiceTest extends BaseSpecification {
         found.id == searched.id
     }
 
+    def "Update"() {
+        when:
+        lineItem.description = "new line item description"
+        def updated = client.lineItems().update(order.id, lineItem)
+
+        then:
+        updated instanceof LineItem
+    }
+
     def "Delete"() {
         given:
         def newLineItem = createLineItem(order)
